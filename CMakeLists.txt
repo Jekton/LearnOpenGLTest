@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_CXX_EXTENSIONS true)
 set(CMAKE_CXX_FLAGS "$CMAKE_CXX_FLAGS -Werror")
 
-include_directories("include" "/usr/local/include")
+include_directories("include" "/usr/local/include" "src")
 
 add_library(GLAD STATIC
     "libs/glad/glad.c"
@@ -16,6 +16,7 @@ add_library(GLAD STATIC
 find_library(GLFW NAME glfw REQUIRED)
 
 add_executable(a.out
-    main.cpp
+    src/main.cpp
+    src/util/Window.cpp
 )
 target_link_libraries(a.out ${GLFW} GLAD)
