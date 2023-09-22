@@ -7,6 +7,7 @@ constexpr auto WIDTH = 800;
 constexpr auto HEIGHT = 600;
 
 static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+static void processInput(GLFWwindow* window);
 
 int main() {
     glfwInit();
@@ -39,8 +40,11 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
     while (!glfwWindowShouldClose(window)) {
+        processInput(window);
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -51,4 +55,10 @@ int main() {
 
 static void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+}
+
+static void processInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
 }
