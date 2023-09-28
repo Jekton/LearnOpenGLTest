@@ -30,6 +30,7 @@ Window::Window(int width, int height, std::string_view title) {
 
 
 Window::~Window() {
+    glfwDestroyWindow(window);
     windows.erase(window);
 }
 
