@@ -15,11 +15,11 @@ static void processInput(Window& window);
 
 static const auto sVertexShaderSource = R"(
 #version 330 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec2 aPos;
 
 void main()
 {
-    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_Position = vec4(aPos, 1.0, 1.0);
 }
 )";
 
@@ -51,27 +51,23 @@ int main() {
     glBindVertexArray(vertexArray);
 
     GLfloat vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left
-    };
-    GLuint indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };
+        // triangle in the left
+        -0.5, 0,
+        -0.25, 0.5,
+        0, 0,
 
-    GLuint elementBuffer;
-    glGenBuffers(1, &elementBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        // triangle in the right
+        0, 0,
+        0.25, 0.5,
+        0.5, 0,
+    };
 
     GLuint vertexBuffer;
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(0);
 
     // clear the previous bindings
@@ -82,7 +78,7 @@ int main() {
 
     GLProgram program{sVertexShaderSource, sFragmentShaderSource};
 
-    window.eventLoop([&program, vertexArray, elementBuffer](Window* w) {
+    window.eventLoop([&program, vertexArray](Window* w) {
         processInput(*w);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -90,8 +86,7 @@ int main() {
 
         program.use();
         glBindVertexArray(vertexArray);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     });
     return 0;
 }
