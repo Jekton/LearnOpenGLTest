@@ -33,8 +33,18 @@ void main()
 }
 )";
 
+static const auto sFragmentShaderSource2 = R"(
+#version 330 core
+out vec4 FragColor;
 
-int main() {
+void main()
+{
+    FragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);
+}
+)";
+
+
+int main() try {
     Window window{WIDTH, HEIGHT, "LearnOpenGLTest"};
     window.makeContextCurrent();
     window.setFramebufferSizeCallback(framebufferSizeCallback);
@@ -83,8 +93,9 @@ int main() {
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     GLProgram program{sVertexShaderSource, sFragmentShaderSource};
+    GLProgram program2{sVertexShaderSource, sFragmentShaderSource2};
 
-    window.eventLoop([&program, vertexArray](Window* w) {
+    window.eventLoop([&program, &program2, vertexArray](Window* w) {
         processInput(*w);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -93,10 +104,13 @@ int main() {
         program.use();
         glBindVertexArray(vertexArray[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+        program2.use();
         glBindVertexArray(vertexArray[1]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     });
     return 0;
+} catch (const GLError& error) {
+    fprintf(stderr, "%s\n", error.what());
 }
 
 static void framebufferSizeCallback(int width, int height) {
