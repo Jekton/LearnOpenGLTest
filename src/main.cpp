@@ -37,18 +37,13 @@ void main()
 int main() {
     Window window{WIDTH, HEIGHT, "LearnOpenGLTest"};
     window.makeContextCurrent();
+    window.setFramebufferSizeCallback(framebufferSizeCallback);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         fprintf(stderr, "fail to init GLAD\n");
         return -1;
     }
 
-    window.setFramebufferSizeCallback(framebufferSizeCallback);
-
-
-    GLuint vertexArray;
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
 
     GLfloat vertices[] = {
         // triangle in the left
@@ -61,13 +56,24 @@ int main() {
         0.25, 0.5,
         0.5, 0,
     };
+    GLuint vertexArray[2];
+    glGenVertexArrays(2, vertexArray);
+    GLuint vertexBuffer[2];
+    glGenBuffers(2, vertexBuffer);
 
-    GLuint vertexBuffer;
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+    glBindVertexArray(vertexArray[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) / 2, vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(vertexArray[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[1]);
+    auto offset = sizeof(vertices) / sizeof(*vertices) / 2;
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) / 2, vertices + offset, GL_STATIC_DRAW);
+    // If stride is 0, the generic vertex attributes are understood to be tightly packed
+    // in the array.
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*) 0);
     glEnableVertexAttribArray(0);
 
     // clear the previous bindings
@@ -85,8 +91,10 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         program.use();
-        glBindVertexArray(vertexArray);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(vertexArray[0]);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(vertexArray[1]);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     });
     return 0;
 }
