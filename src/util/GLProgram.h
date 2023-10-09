@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <string_view>
+
 #include <glad/glad.h>
 
 #include "util/GLError.h"
@@ -30,6 +32,21 @@ public:
 
     void use() const noexcept {
         glUseProgram(program);
+    }
+
+    void setUniform(std::string_view name, bool value) {
+        auto location = glGetUniformLocation(program, name.data());
+        glUniform1i(location, static_cast<int>(value));
+    }
+
+    void setUniform(std::string_view name, int value) {
+        auto location = glGetUniformLocation(program, name.data());
+        glUniform1i(location, value);
+    }
+
+    void setUniform(std::string_view name, float value) {
+        auto location = glGetUniformLocation(program, name.data());
+        glUniform1f(location, value);
     }
 
 private:
