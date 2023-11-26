@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 set(CMAKE_CXX_EXTENSIONS true)
 set(CMAKE_CXX_FLAGS "$CMAKE_CXX_FLAGS -Werror")
 
-include_directories("include" "/usr/local/include" "src")
+include_directories("include" "/opt/homebrew/include" "src")
 
 add_library(GLAD STATIC
     "libs/glad/glad.c"
